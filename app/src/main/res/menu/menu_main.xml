@@ -3,14 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="de.drkalz.pointofalse.MainActivity">
     <item
-        android:title="@string/reset"
+        android:title="@string/search"
         android:orderInCategory="100"
+        android:id="@+id/action_search"
+        android:icon="@android:drawable/ic_menu_search"
+        android:showAsAction="always" />
+    <item
+        android:title="@string/reset"
+        android:orderInCategory="200"
         android:id="@+id/action_reset"
         android:icon="@android:drawable/ic_menu_revert"
-        android:showAsAction="ifRoom" />
+        android:showAsAction="always" />
     <item
         android:id="@+id/action_settings"
-        android:orderInCategory="200"
+        android:orderInCategory="300"
         android:showAsAction="collapseActionView|ifRoom"
         android:title="@string/action_settings" />
 </menu>

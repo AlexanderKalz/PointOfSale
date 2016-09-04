@@ -43,5 +43,4 @@
         android:text="@string/date_start"
         android:textSize="24sp" />
 
-
 </LinearLayout>

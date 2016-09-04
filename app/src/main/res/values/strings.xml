@@ -12,4 +12,6 @@
     <string name="remove">Remove</string>
     <string name="confirmation_dialog_message">Are you sure you want to remove all items?</string>
     <string name="edit">Edit</string>
+    <string name="search">Suche</string>
+    <string name="search_dialog_title">Choose an Item</string>
 </resources>
