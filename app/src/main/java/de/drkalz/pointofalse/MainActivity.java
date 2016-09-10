@@ -18,6 +18,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import java.util.Date;
+
 import static android.support.design.widget.Snackbar.make;
 
 
@@ -27,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mQuantityText;
     private TextView mDeliveryDateText;
     final StartApp sApp = StartApp.getInstance();
+    public Item myCurrentItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,49 +42,87 @@ public class MainActivity extends AppCompatActivity {
         mQuantityText = (TextView) findViewById(R.id.quantity_text);
         mDeliveryDateText = (TextView) findViewById(R.id.date_text);
 
+        sApp.setCurrentItem(new Item());
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 addItem(false);
+                showCurrentItem();
                 Snackbar.make(view, "Item added", Snackbar.LENGTH_LONG).show();
             }
         });
 
-        registerForContextMenu(mNameText);
+        mNameText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                callEditRemoveMenu();
+            }
+        });
+    }
 
+    private void callEditRemoveMenu() {
+        final CharSequence[] menuItems = {"Edit", "Remove"};
+        DialogFragment df = new DialogFragment() {
+            @NonNull
+            @Override
+            public Dialog onCreateDialog(Bundle savedInstanceState) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("Please Choose");
+                builder.setItems(menuItems, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if (i == 0) {
+                            addItem(true);
+                        } else {
+
+                            sApp.setCurrentItem(new Item());
+                        }
+                    }
+                });
+
+                return builder.create();
+            }
+        };
+        df.show(getFragmentManager(), "EditRemove");
     }
 
     public void addItem(boolean isEditing) {
-        AddItemDialog df = new AddItemDialog();
-        df.show(getFragmentManager(), "AlertItemDialog");
-        showCurrentItem();
+        if (isEditing) {
+            Bundle bundle = new Bundle();
+            bundle.putString("name", sApp.getCurrentItem().getName());
+            bundle.putInt("quantity", sApp.getCurrentItem().getQuantity());
+            bundle.putLong("date", sApp.getCurrentItem().getDeliveryDateTime());
+            bundle.putBoolean("isEditing", true);
+            AddItemDialog df = new AddItemDialog();
+            df.setArguments(bundle);
+            df.show(getFragmentManager(), "AlertItemDialog");
+            showCurrentItem();
+        } else {
+            AddItemDialog df = new AddItemDialog();
+            df.show(getFragmentManager(), "AlertItemDialog");
+            showCurrentItem();
+        }
     }
 
     private void showCurrentItem() {
         mNameText.setText(sApp.getCurrentItem().getName());
-        mQuantityText.setText(getString(R.string.quantity_format, sApp.getCurrentItem().getQuantity()));
-        mDeliveryDateText.setText(getString(R.string.date_format, sApp.getCurrentItem().getDeliveryDateString()));
+        mQuantityText.setText(String.valueOf(sApp.getCurrentItem().getQuantity()));
+        mDeliveryDateText.setText(getString(R.string.date_format, new Date(sApp.getCurrentItem().getDeliveryDateTime())));
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
        switch (item.getItemId()) {
            case R.id.action_reset:
-               final Item mClearedItem = sApp.getCurrentItem();
+               final Item mClearedItem = myCurrentItem;
                sApp.setCurrentItem(new Item());
                showCurrentItem();
                Snackbar snackbar = Snackbar.make(findViewById(R.id.coordinator_layout), "Item cleared", Snackbar.LENGTH_LONG)
@@ -139,6 +180,5 @@ public class MainActivity extends AppCompatActivity {
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         getMenuInflater().inflate(R.menu.menu_context, menu);
-
     }
 }

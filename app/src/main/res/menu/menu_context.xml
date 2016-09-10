@@ -6,13 +6,16 @@
     <item
         android:id="@+id/menu_context_edit"
         android:icon="@android:drawable/ic_menu_edit"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         android:title="@string/edit"
-        tools:ignore="AppCompatResource" />
+        tools:ignore="AppCompatResource"
+        android:visible="true"
+        android:enabled="false" />
     <item
         android:id="@+id/menu_context_remove"
         android:icon="@android:drawable/ic_menu_delete"
-        android:showAsAction="ifRoom"
         android:title="@string/remove"
-        tools:ignore="AppCompatResource" />
+        tools:ignore="AppCompatResource"
+        android:visible="true"
+        android:showAsAction="always" />
 </menu>

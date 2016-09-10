@@ -12,7 +12,7 @@ public class Item {
     private Date mDeliveryDate;
 
     public Item() {
-        mName = "Nothing";
+        mName = "--";
         mQuantity = 0;
         mDeliveryDate = new Date(0);
     }

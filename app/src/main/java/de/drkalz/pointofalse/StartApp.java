@@ -31,6 +31,14 @@ public class StartApp extends Application {
         this.mItems.add(item);
     }
 
+    public void changeItemInArray(int position, Item mCurrentItem) {
+        this.mItems.set(position, mCurrentItem);
+    }
+
+    public int getPositionInArray(Item mCurrentItem) {
+        return this.mItems.indexOf(mCurrentItem);
+    }
+
     public Item getItemFromArray (int position) {
         return mItems.get(position);
     }
