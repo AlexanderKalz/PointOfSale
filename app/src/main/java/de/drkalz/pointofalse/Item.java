@@ -1,6 +1,6 @@
 package de.drkalz.pointofalse;
 
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -44,7 +44,9 @@ public class Item {
     }
 
     public String getDeliveryDateString() {
-        return DateFormat.getDateInstance().format(mDeliveryDate);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+        String date = sdf.format(mDeliveryDate);
+        return date;
     }
 
     public long getDeliveryDateTime() {

@@ -18,18 +18,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import java.util.Date;
-
 import static android.support.design.widget.Snackbar.make;
 
+public class MainActivity extends AppCompatActivity implements AddItemDialog.ConfirmationDialogFragmentListener {
 
-public class MainActivity extends AppCompatActivity {
-
+    final StartApp sApp = StartApp.getInstance();
+    public Item myCurrentItem;
     private TextView mNameText;
     private TextView mQuantityText;
     private TextView mDeliveryDateText;
-    final StartApp sApp = StartApp.getInstance();
-    public Item myCurrentItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,11 +46,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 addItem(false);
-                showCurrentItem();
                 Snackbar.make(view, "Item added", Snackbar.LENGTH_LONG).show();
             }
         });
-
         mNameText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,19 +92,19 @@ public class MainActivity extends AppCompatActivity {
             bundle.putBoolean("isEditing", true);
             AddItemDialog df = new AddItemDialog();
             df.setArguments(bundle);
+            df.setConfirmationDialogFragmentListener(MainActivity.this);
             df.show(getFragmentManager(), "AlertItemDialog");
-            showCurrentItem();
         } else {
             AddItemDialog df = new AddItemDialog();
+            df.setConfirmationDialogFragmentListener(MainActivity.this);
             df.show(getFragmentManager(), "AlertItemDialog");
-            showCurrentItem();
         }
     }
 
     private void showCurrentItem() {
         mNameText.setText(sApp.getCurrentItem().getName());
-        mQuantityText.setText(String.valueOf(sApp.getCurrentItem().getQuantity()));
-        mDeliveryDateText.setText(getString(R.string.date_format, new Date(sApp.getCurrentItem().getDeliveryDateTime())));
+        mQuantityText.setText("Menge: " + String.valueOf(sApp.getCurrentItem().getQuantity()));
+        mDeliveryDateText.setText("Lieferdatum: " + sApp.getCurrentItem().getDeliveryDateString());
     }
 
     @Override
@@ -161,7 +156,6 @@ public class MainActivity extends AppCompatActivity {
                         showCurrentItem();
                     }
                 });
-
                 return builder.create();
             }
         };
@@ -180,5 +174,15 @@ public class MainActivity extends AppCompatActivity {
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         getMenuInflater().inflate(R.menu.menu_context, menu);
+    }
+
+    @Override
+    public void onPositiveClick() {
+        showCurrentItem();
+    }
+
+    @Override
+    public void onNegativeClick() {
+
     }
 }

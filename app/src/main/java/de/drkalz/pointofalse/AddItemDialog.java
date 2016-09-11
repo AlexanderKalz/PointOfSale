@@ -13,13 +13,18 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-public class AddItemDialog extends DialogFragment {
+public class AddItemDialog extends DialogFragment implements DialogInterface.OnClickListener {
 
     final StartApp sApp = StartApp.getInstance();
     boolean isEditing = false;
+    private ConfirmationDialogFragmentListener listener;
+
+    public void setConfirmationDialogFragmentListener(ConfirmationDialogFragmentListener listener) {
+        this.listener = listener;
+    }
 
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View view = getActivity().getLayoutInflater().inflate(R.layout.dialog_add, null);
         builder.setView(view);
 
@@ -46,19 +51,42 @@ public class AddItemDialog extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 String name = goodsEdT.getText().toString();
-                int  quantity = Integer.parseInt(quantityEdT.getText().toString());
+                int quantity = Integer.parseInt(quantityEdT.getText().toString());
                 Calendar calendar = new GregorianCalendar(deliveryDate.getYear(),
                         deliveryDate.getMonth(), deliveryDate.getDayOfMonth());
                 long date = calendar.getTimeInMillis();
-                sApp.setCurrentItem(new Item(name, quantity, new Date(date)));
                 if (!isEditing) {
+                    sApp.setCurrentItem(new Item(name, quantity, new Date(date)));
                     sApp.addItemToArray(sApp.getCurrentItem());
                 } else {
                     int x = sApp.getPositionInArray(sApp.getCurrentItem());
+                    Item itemToChange = sApp.getCurrentItem();
+                    itemToChange.setName(name);
+                    itemToChange.setQuantity(quantity);
+                    itemToChange.setDeliveryDate(new Date(date));
+                    sApp.setCurrentItem(itemToChange);
                     sApp.changeItemInArray(x, sApp.getCurrentItem());
                 }
             }
         });
         return builder.create();
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        if (listener != null) {
+            switch (which) {
+                case DialogInterface.BUTTON_POSITIVE:
+                    listener.onPositiveClick();
+                default:
+                    listener.onNegativeClick();
+            }
+        }
+    }
+
+    public interface ConfirmationDialogFragmentListener {
+        void onPositiveClick();
+
+        void onNegativeClick();
     }
 }
